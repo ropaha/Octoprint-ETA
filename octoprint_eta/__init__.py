@@ -18,6 +18,7 @@ class DisplayETAPlugin(octoprint.plugin.ProgressPlugin,
 
     def fromTimer(self):
         self.eta_string = self.calculate_ETA()
+        self._printer.commands("M117 ETA: {}".format(self.eta_string))
         self._plugin_manager.send_plugin_message(self._identifier, dict(eta_string=self.eta_string))
         
         
@@ -53,7 +54,8 @@ class DisplayETAPlugin(octoprint.plugin.ProgressPlugin,
                 self.timer.cancel()
                 self.timer = RepeatedTimer(10.0, DisplayETAPlugin.fromTimer, args=[self], run_first=True,)
                 self.timer.start()
-            self._plugin_manager.send_plugin_message(self._identifier, dict(eta_string=self.eta_string))
+                self._printer.commands("M117 ETA: {}".format(self.eta_string))
+                self._plugin_manager.send_plugin_message(self._identifier, dict(eta_string=self.eta_string))
             
     def get_assets(self):
         return {
